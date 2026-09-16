@@ -22,10 +22,25 @@ export default function BudgetsPage() {
     });
   };
 
+  const [error, setError] = useState<string | null>(null);
+  const [ok, setOk] = useState<string | null>(null);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Call API to update budget
-    console.log("Updating budget:", formData);
+    const sessionCap = Number(formData.sessionCap);
+    const taskCap = Number(formData.taskCap);
+    if (!Number.isFinite(sessionCap) || sessionCap < 0 || !Number.isFinite(taskCap) || taskCap < 0) {
+      setError("Session and task caps must be non-negative numbers");
+      setOk(null);
+      return;
+    }
+    if (taskCap > sessionCap) {
+      setError("Task cap cannot exceed session cap");
+      setOk(null);
+      return;
+    }
+    setError(null);
+    setOk("Budget validated — ready to write via Budget contract / API");
   };
 
   return (
@@ -129,7 +144,12 @@ export default function BudgetsPage() {
               </div>
             </CardContent>
 
-            <CardFooter gap-3>
+            {error ? <p className="px-6 pb-2 text-sm text-red-600">{error}</p> : null}
+            {ok ? (
+              <p className="px-6 pb-2 text-sm text-emerald-700 dark:text-emerald-400">{ok}</p>
+            ) : null}
+
+            <CardFooter className="gap-3">
               <Button variant="outline" className="flex-1">
                 Cancel
               </Button>

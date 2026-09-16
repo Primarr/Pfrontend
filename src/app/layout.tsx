@@ -2,9 +2,10 @@
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { ErrorBoundary } from "@/components/error-boundary";
+import { WalletProvider } from "@/components/wallet/wallet-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,13 +30,18 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        <title>Primer — Agent Payment Dashboard</title>
-        <meta name="description" content="Payment rails for the agent economy" />
+        <title>Primar — Agent Payment Dashboard</title>
+        <meta
+          name="description"
+          content="Stellar-settled payment rails for the agent economy"
+        />
       </head>
       <body className="min-h-full flex flex-col bg-white dark:bg-black">
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
+        <ErrorBoundary>
+          <WalletProvider>
+            <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+          </WalletProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );
