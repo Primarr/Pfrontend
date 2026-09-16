@@ -4,12 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { BarChart3, Settings, Zap, Code2, Activity, Grid3x3, LogOut } from "lucide-react";
-import { useState } from "react";
+import { BarChart3, Settings, Zap, Code2, Activity, Grid3x3 } from "lucide-react";
+import { HorizonStatus } from "@/components/stellar/horizon-status";
+import { WalletButton } from "@/components/wallet/wallet-button";
 
 export function Nav() {
   const pathname = usePathname();
-  const [account, setAccount] = useState<string | null>(null);
 
   const links = [
     { href: "/", label: "Overview", icon: Grid3x3 },
@@ -23,13 +23,13 @@ export function Nav() {
   return (
     <nav className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <Link href="/" className="flex items-center gap-2">
+        <div className="flex justify-between items-center h-16 gap-3">
+          <Link href="/" className="flex items-center gap-2 shrink-0">
             <Image src="/logo.jpg" alt="Primer" width={32} height={32} className="rounded" />
             <span className="font-semibold text-lg hidden sm:inline">Primer</span>
           </Link>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 overflow-x-auto">
             {links.map(({ href, label, icon: Icon }) => (
               <Link
                 key={href}
@@ -47,28 +47,9 @@ export function Nav() {
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
-            {account ? (
-              <>
-                <span className="text-sm text-zinc-600 dark:text-zinc-400 hidden sm:inline">
-                  {account.slice(0, 8)}...
-                </span>
-                <button
-                  onClick={() => setAccount(null)}
-                  className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
-                  title="Disconnect"
-                >
-                  <LogOut className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={() => setAccount("GAVXXX...XXXX")}
-                className="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-sm font-medium transition-colors"
-              >
-                Connect Wallet
-              </button>
-            )}
+          <div className="flex items-center gap-3 shrink-0">
+            <HorizonStatus className="hidden md:inline-flex" />
+            <WalletButton />
           </div>
         </div>
       </div>
