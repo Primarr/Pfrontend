@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
+import { isStellarPublicKey } from "@/lib/stellar";
 
 export default function PublishServicePage() {
   const [formData, setFormData] = useState({
@@ -16,18 +17,30 @@ export default function PublishServicePage() {
     pricePerCall: "",
     payoutAddress: "",
   });
+  const [error, setError] = useState<string | null>(null);
+  const [ok, setOk] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+    setError(null);
+    setOk(null);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Call API to publish service
-    console.log("Publishing service:", formData);
+    const price = Number(formData.pricePerCall);
+    if (!Number.isFinite(price) || price <= 0) {
+      setError("Price per call must be greater than zero");
+      return;
+    }
+    if (!isStellarPublicKey(formData.payoutAddress)) {
+      setError("Payout address must be a valid Stellar G… public key");
+      return;
+    }
+    setOk("Service payload validated — ready to publish via API / registry contract");
   };
 
   return (
@@ -128,6 +141,13 @@ export default function PublishServicePage() {
                 </p>
               </div>
             </CardContent>
+
+            {error ? (
+              <p className="px-6 pb-2 text-sm text-red-600">{error}</p>
+            ) : null}
+            {ok ? (
+              <p className="px-6 pb-2 text-sm text-emerald-700 dark:text-emerald-400">{ok}</p>
+            ) : null}
 
             <CardFooter className="gap-3">
               <Link href="/registry" className="flex-1">
